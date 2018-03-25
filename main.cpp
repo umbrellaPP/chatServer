@@ -3,19 +3,22 @@
 #include <QtSql/QSqlQuery>
 #include <QDebug>
 #include "db/userdb.h"
+#include "net/server.h"
+#include "net/handler.h"
+
+#include <QTcpServer>
+#include <QHostAddress>
 
 #include <QSqlQuery>
+
+#include "util/jsonparser.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     QSqlDatabase::addDatabase("QMYSQL");
 
-    UserDB *userDB = new UserDB();
-//    userDB->addUser("Test", "wqqqqqq");
-//    userDB->removeUser("14533");
-//    userDB->selectAllUsers();
-//    userDB->selectUser("14569");
-//    userDB->updateUser("14568", "PP", "wqnmlgsb");
+    Net->initWeb();
+
     return a.exec();
 }

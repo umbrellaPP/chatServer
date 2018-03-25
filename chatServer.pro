@@ -1,4 +1,4 @@
-QT += core sql
+QT += core sql network
 QT -= gui
 
 CONFIG += c++11
@@ -10,7 +10,10 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    db/userdb.cpp
+    db/userdb.cpp \
+    util/jsonparser.cpp \
+    net/handler.cpp \
+    net/server.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -25,4 +28,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     userdb.h \
-    db/userdb.h
+    db/userdb.h \
+    define.h \
+    util/jsonparser.h \
+    net/handler.h \
+    net/server.h
