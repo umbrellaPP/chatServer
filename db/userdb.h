@@ -10,7 +10,7 @@ class UserDB
 {
 public:
     UserDB();
-    bool addUser(QString userName, QString password);  // 添加用户
+    QString addUser(QString userName, QString password);  // 添加用户
     void removeUser(QString accountId);  // 删除用户
     QSqlQuery* selectAllUsers();  // 查找所有用户
     QJsonObject selectUser(QString accountId);  // 查找用户

@@ -8,17 +8,22 @@ FriendsDB::FriendsDB() {
 }
 
 bool FriendsDB::addFriend(QString accountId, QString friendId) {
-    QString friends = this->selectFriend(accountId).value("friendId").toString();
+    QJsonObject result = this->selectFriend(accountId);
+    QSqlQuery query(this->db);
     QString queryCmd;
-    if (!friends.isEmpty()) {
+    if (!result.isEmpty()) {
+        QString friends = this->selectFriend(accountId).value("friendId").toString();
+        if (friends.isEmpty()) {
+            friends = friendId;
+        } else {
+            friends += ',' + friendId;
+        }
         queryCmd = QString("update friends set friendId='%1' where accountId='%2';")
-                .arg(friends+","+friendId).arg(accountId);
+                .arg(friends).arg(accountId);
     } else {
-        queryCmd = QString("insert into friends values(NULL, '%1', '%2')")
+        queryCmd = QString("insert into friends values(NULL, '%1', '%2', '')")
                 .arg(accountId).arg(friendId);
     }
-    qDebug() << queryCmd;
-    QSqlQuery query(this->db);
 
     if (query.exec(queryCmd)) {
 //        qDebug() << "添加好友成功";
@@ -31,6 +36,7 @@ bool FriendsDB::addFriend(QString accountId, QString friendId) {
 
 bool FriendsDB::removeFriend(QString accountId, QString friendId) {
     QString friends = this->selectFriend(accountId).value("friendId").toString();
+    QString groups = this->selectFriend(accountId).value("groupId").toString();
     if (friends.indexOf(friendId) < 0) {
         return false;
     }
@@ -42,15 +48,21 @@ bool FriendsDB::removeFriend(QString accountId, QString friendId) {
         }
     }
     friends = friendList.join(',');
-    QString queryCmd = QString("update friends set friendId = '%1' where accountId = '%2'")
-            .arg(friends).arg(accountId);
+
     QSqlQuery query(this->db);
+    QString queryCmd;
+    if (friends.isEmpty() && groups.isEmpty()) {
+        queryCmd = QString("delete from friends where accountId = '%1'").arg(accountId);
+    } else {
+        queryCmd = QString("update friends set friendId = '%1' where accountId = '%2'")
+                .arg(friends).arg(accountId);
+    }
     query.exec(queryCmd);
     return true;
 }
 
 QJsonObject FriendsDB::selectFriend(QString accountId) {
-    QString queryCmd = QString("select * from friends where accountId = '%1';")
+    QString queryCmd = QString("select * from friends where accountId = '%1'")
             .arg(accountId);
     QSqlQuery query(this->db);
     QJsonObject obj;
@@ -158,22 +170,29 @@ bool FriendsDB::quitGroupInGroups(QString accountId, QString groupId) {
     }
 }
 
-void FriendsDB::joinGroupInFriends(QString accountId, QString groupId) {
-    QString groups = this->selectFriend(accountId).value("groupId").toString();
-    if (groups.isEmpty()) {
-        groups = groupId;
-    } else {
-        groups += ',' + groupId;
-    }
-
+void FriendsDB::joinGroupInFriends(QString accountId, QString groupId) {    
     QSqlQuery *query = new QSqlQuery(this->db);
-    QString queryCmd = QString("update friends set groupId = '%1' where accountId = '%2'")
-            .arg(groups).arg(accountId);
+    QString queryCmd;
+    QJsonObject result = this->selectFriend(accountId);
+    if (result.isEmpty()) {
+        queryCmd = QString("insert into friends values(NULL, '%1', '', '%2')")
+                .arg(accountId).arg(groupId);
+    } else {
+        QString groups = result.value("groupId").toString();
+        if (groups.isEmpty()) {
+            groups = groupId;
+        } else {
+            groups += ',' + groupId;
+        }
+        queryCmd = QString("update friends set groupId = '%1' where accountId = '%2'")
+                .arg(groups).arg(accountId);
+    }
     query->exec(queryCmd);
 }
 
 void FriendsDB::quitGroupInFriends(QString accountId, QString groupId) {
     QString groups = this->selectFriend(accountId).value("groupId").toString();
+    QString friends = this->selectFriend(accountId).value("friendId").toString();
     QStringList groupList = groups.split(',');
     for (int i = 0; i < groupList.count(); ++i) {
         if (groupId == groupList[i]) {
@@ -182,10 +201,16 @@ void FriendsDB::quitGroupInFriends(QString accountId, QString groupId) {
         }
     }
     groups = groupList.join(',');
+    QString queryCmd;
 
     QSqlQuery *query = new QSqlQuery(this->db);
-    QString queryCmd = QString("update friends set groupId = '%1' where accountId = '%2'")
-            .arg(groups).arg(accountId);
+
+    if (groups.isEmpty() && friends.isEmpty()) {
+        queryCmd = QString("delete from friends where accountId = '%1'").arg(accountId);
+    } else {
+        queryCmd = QString("update friends set groupId = '%1' where accountId = '%2'")
+                .arg(groups).arg(accountId);
+    }
     query->exec(queryCmd);
 }
 

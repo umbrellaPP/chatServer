@@ -10,8 +10,8 @@ JsonParser::JsonParser() {
 
 void JsonParser::getPackageData(QByteArray package, Code *code, QJsonObject *obj) {
     QJsonObject json = this->toJson(package);
-    *code = Code(json.keys()[0].toInt());
-    *obj = json.value(QString::number(*code)).toObject();
+    *code = json.keys()[0];
+    *obj = json.value(*code).toObject();
 }
 
 QByteArray JsonParser::generatePackage(Code code, QJsonObject obj) {

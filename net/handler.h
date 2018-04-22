@@ -26,6 +26,10 @@ private:
     UserDB userDB;
     FriendsDB friendDB;
 
+    void logPackage(QTcpSocket *socket, QString code, QJsonObject obj);
+    QString getUserNames(QString accountIds);
+    QString getGroupNames(QString groupIds);
+
     void handleLogin(QTcpSocket *socket, QJsonObject data);
     void handleRegister(QTcpSocket *socket, QJsonObject data);
     void handleGetFriendsList(QTcpSocket *socket, QJsonObject data);    
@@ -43,6 +47,7 @@ private:
     void handleUpdataMember(QTcpSocket *socket, QJsonObject data);
     void handleSendGroupMsg(QTcpSocket *socket, QJsonObject data);
     void handleQuitGroup(QTcpSocket *socket, QJsonObject data);
+    void updateMembers(QString groupId);
 
     void send(QTcpSocket *socket, Code code, QJsonObject data);
 };

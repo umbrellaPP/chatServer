@@ -7,17 +7,17 @@ UserDB::UserDB() {
     this->db = QSqlDatabase::database();
 }
 
-bool UserDB::addUser(QString userName, QString password) {
+QString UserDB::addUser(QString userName, QString password) {
     QString accountId = this->generateAcountID();
     QSqlQuery query(this->db);
-    QString queryCmd = QString("insert into user values(NULL, '%1', '%2', '%3', '')")
+    QString queryCmd = QString("insert into user values(NULL, '%1', '%2', '%3')")
             .arg(accountId).arg(userName).arg(password);
     if (query.exec(queryCmd)){
 //        qDebug() << "添加用户成功";
-        return true;
+        return accountId;
     }else {
 //        qDebug() << "添加用户失败" << query.executedQuery();
-        return false;
+        return "";
     }
 }
 
