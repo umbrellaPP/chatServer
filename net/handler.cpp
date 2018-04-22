@@ -215,7 +215,7 @@ void Handler::handleRemoveFriend(QTcpSocket *socket, QJsonObject data) {
         obj2.insert("result", 0);
         obj2.insert("accountId", friendId);
         obj2.insert("friendId", accountId);
-        obj2.insert("friendUserName", userDB.selectUser(friendId).value("userName").toString());
+        obj2.insert("friendUserName", userDB.selectUser(accountId).value("userName").toString());
         this->send(mSocket, CodeNS::S2C_REMOVE_FRIEND, obj2);
     }
 }
