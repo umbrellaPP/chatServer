@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     db/userdb.cpp \
     util/jsonparser.cpp \
     net/handler.cpp \
-    net/server.cpp
+    net/server.cpp \
+    db/friendsdb.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -32,4 +33,5 @@ HEADERS += \
     define.h \
     util/jsonparser.h \
     net/handler.h \
-    net/server.h
+    net/server.h \
+    db/friendsdb.h

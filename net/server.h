@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QList>
+#include <QMap>
+#include <QSqlDatabase>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QJsonObject>
@@ -20,7 +22,16 @@ public:
         static Server* _instance = new Server();
         return _instance;
     }
-    void initWeb();
+    void init() {
+        this->initDB();
+        this->initWeb();
+    }
+
+    bool isOnline(QString accountId);  // 判断用户是否在线
+    QString socketToAccountId(QTcpSocket *socket);
+    void offline(QTcpSocket *socket);  // 下线操作
+
+    QMap<QString, QTcpSocket*> onlineMap;  // accountId 映射 socket
 
 //    void sendPackage(Code code, QJsonObject obj);  // 发送数据包  deprecated
 public slots:
@@ -30,11 +41,14 @@ public slots:
 
 private:
     Server();
+    void initDB();
+    void initWeb();
 
     QTcpServer *server;
-    Handler handler;
+    Handler *handler;
 //    QTcpSocket *m_socket;
     QList<QTcpSocket*> socketList;
+
 };
 
 #endif // SERVER_H

@@ -13,12 +13,10 @@
 
 #include "util/jsonparser.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
-    QSqlDatabase::addDatabase("QMYSQL");
 
-    Net->initWeb();
+    Net->init();
 
     return a.exec();
 }
